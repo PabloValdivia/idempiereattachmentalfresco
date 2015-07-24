@@ -16,18 +16,6 @@
  *****************************************************************************/
 package org.compiere.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Random;
-import java.util.logging.Level;
-
-import org.compiere.util.CLogger;
-import org.compiere.util.MimeType;
-
-
 /**
  *	Individual Attachment Entry of MAttachment
  *	

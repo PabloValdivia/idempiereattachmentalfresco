@@ -79,7 +79,7 @@ public class CmisUtil
 	    return document;
 	}
 	
-	public static Document createAdempiereAttachment(Session session, Folder folder, String fileName, String mimetype, byte[] content, String tableName, String recordId) throws Exception 
+	public static Document createiDempiereAttachment(Session session, Folder folder, String fileName, String mimetype, byte[] content, String tableName, String recordId) throws Exception 
 	{
 	    Map<String, Object> docProps = new HashMap<String, Object>();
 	    docProps.put(PropertyIds.NAME, fileName);

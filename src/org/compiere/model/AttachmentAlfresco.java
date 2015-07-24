@@ -205,7 +205,7 @@ public class AttachmentAlfresco implements IAttachmentStore {
 								throw new FolderNotFoundException();
 							
 							// Upload to CMIS
-							cmisDoc = CmisUtil.createAdempiereAttachment(session, folder, attach.getEntryName(i), mimeType, content, tableName, recordId);
+							cmisDoc = CmisUtil.createiDempiereAttachment(session, folder, attach.getEntryName(i), mimeType, content, tableName, recordId);
 							docId = cmisDoc.getId().substring(0, cmisDoc.getId().lastIndexOf(";")); // Remove ";<version>"
 							
 						} catch (IOException e) {
@@ -255,15 +255,54 @@ public class AttachmentAlfresco implements IAttachmentStore {
 
 	@Override
 	public boolean delete(MAttachment attach, MStorageProvider prov) {
-		// TODO Auto-generated method stub
-		return false;
+		//delete all attachment files
+		for (int i=0; i<attach.m_items.size(); i++) {
+			final MAttachmentEntryEcosoft entry = (MAttachmentEntryEcosoft) attach.m_items.get(i);
+			
+			Session session = CmisUtil.createCmisSession(prov.getUserName(), prov.getPassword(), prov.getURL());
+			org.apache.chemistry.opencmis.client.api.Document file = 
+					(org.apache.chemistry.opencmis.client.api.Document) session.getObject(session.createObjectId(entry.getDocId()));
+			
+			log.fine("delete: " + file.getName());
+			if(file !=null){
+				try {
+					file.deleteAllVersions();
+				} catch (Exception e) {
+					log.warning("unable to delete " + file.getName());
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override
 	public boolean deleteEntry(MAttachment attach, MStorageProvider prov, int index) {
-		// TODO Auto-generated method stub
-		attach.m_items.remove(index);
-		return true;
+		if (index >= 0 && index < attach.m_items.size()) {
+			// CMIS by KTU
+			//remove files
+			final MAttachmentEntryEcosoft entry = (MAttachmentEntryEcosoft) attach.m_items.get(index);
+
+			// Connect
+			Session session = CmisUtil.createCmisSession(prov.getUserName(), prov.getPassword(), prov.getURL());
+			org.apache.chemistry.opencmis.client.api.Document file = 
+					(org.apache.chemistry.opencmis.client.api.Document) session.getObject(session.createObjectId(entry.getDocId()));
+
+			log.fine("delete: " + file.getName());
+			if(file !=null){
+				try {
+					file.deleteAllVersions();
+				} catch (Exception e) {
+					log.warning("unable to delete " + file.getName());
+				}
+			}
+
+			// --
+			attach.m_items.remove(index);
+			log.config("Index=" + index + " - NewSize=" + attach.m_items.size());
+			return true;
+		}
+		log.warning( "Not deleted Index=" + index + " - Size=" + attach.m_items.size());
+		return false;
 	}
 
 }
