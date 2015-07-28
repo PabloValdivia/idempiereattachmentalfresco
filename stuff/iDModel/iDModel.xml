@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--                              -->
+<!-- iDempiere Content Model -->
+<!--                              -->
+
+<model name="id:contentmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+   <!-- Metadata about the model -->
+   <description>iDempiere Content Model</description>
+   <author>kittiu / a42niem</author>
+   <version>1.0</version>
+
+   <!-- Imports are required to allow references to definitions in other models -->
+   <imports>
+   	  <!-- Import Alfresco Dictionary Definitions -->
+      <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+      <!-- Import Alfresco Content Domain Model Definitions -->
+      <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+   </imports>
+
+   <!-- Define the URI and Prefix for this content model -->
+   <namespaces>
+      <namespace uri="idempiere.model" prefix="id"/>
+   </namespaces>
+
+   <!-- Content Types -->
+   <types>
+
+      <type name="id:attachment">
+         <title>iDempiere Attachment</title>
+         <parent>cm:content</parent>
+         <properties>
+            <property name="id:tablename">
+               <title>Table Name</title>
+               <type>d:text</type>
+               <default></default>
+            </property>
+            <property name="id:recordid">
+               <title>Record ID</title>
+               <type>d:text</type>
+               <default></default>
+            </property>
+         </properties>
+      </type>
+   </types>
+
+</model>

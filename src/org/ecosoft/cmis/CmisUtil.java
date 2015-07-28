@@ -24,6 +24,7 @@ import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 
 public class CmisUtil 
 {
@@ -83,15 +84,16 @@ public class CmisUtil
 	{
 	    Map<String, Object> docProps = new HashMap<String, Object>();
 	    docProps.put(PropertyIds.NAME, fileName);
-	    docProps.put(PropertyIds.OBJECT_TYPE_ID, "D:ad:attachment");
-	    docProps.put("ad:tablename", tableName);
-	    docProps.put("ad:recordid", recordId);
+	    docProps.put(PropertyIds.OBJECT_TYPE_ID, "D:id:attachment");
+	    docProps.put("id:tablename", tableName);
+	    docProps.put("id:recordid", recordId);
 	    
 	    ByteArrayInputStream in = new ByteArrayInputStream(content);
 	    ContentStream contentStream = session.getObjectFactory().createContentStream(fileName, content.length, mimetype, in);
 	    
-	    ObjectId documentId = session.createDocument(docProps, session.createObjectId((String) folder.getPropertyValue(PropertyIds.OBJECT_ID)), contentStream, null, null, null, null);
-	    Document document = (Document) session.getObject(documentId);
+//	    ObjectId documentId = session.createDocument(docProps, session.createObjectId((String) folder.getPropertyValue(PropertyIds.OBJECT_ID)), contentStream, null, null, null, null);
+//	    Document document = (Document) session.getObject(documentId);
+	    Document document = (Document) folder.createDocument(docProps, contentStream, null);
 	    return document;
 	}
   

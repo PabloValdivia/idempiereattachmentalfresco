@@ -53,7 +53,7 @@ public class AttachmentAlfresco implements IAttachmentStore {
 	@Override
 	public boolean loadLOBData(MAttachment attach, MStorageProvider prov) {
 			// Reset
-			ArrayList<MAttachmentEntryEcosoft> m_items = new ArrayList<MAttachmentEntryEcosoft>();
+			attach.m_items = new ArrayList<MAttachmentEntry>();
 			//
 			byte[] data = attach.getBinaryData();
 			if (data == null)
@@ -78,7 +78,7 @@ public class AttachmentAlfresco implements IAttachmentStore {
 					final Node nameNode = attributes.getNamedItem("name");
 					if(docidNode == null || fileNode==null || nameNode==null){
 						log.severe("no filename for entry " + i);
-						m_items = null;
+						attach.m_items = null;
 						return false;
 					}
 					log.fine("name: " + nameNode.getNodeValue());
@@ -109,9 +109,9 @@ public class AttachmentAlfresco implements IAttachmentStore {
 							InputStream fileInputStream = file.getContentStream().getStream();
 							final byte[] dataEntry = CmisUtil.toByteArray(fileInputStream);
 							fileInputStream.close();
-							final MAttachmentEntryEcosoft entry = new MAttachmentEntryEcosoft(file.getName(),	dataEntry, docId, m_items.size() + 1);
-							
-							m_items.add(entry);
+							String name = file.getName();
+							final MAttachmentEntry entry = new MAttachmentEntry(setDocId(name, docId), dataEntry, attach.m_items.size() + 1);
+							attach.m_items.add(entry);
 						} catch (FileNotFoundException e) {
 							log.severe("File Not Found.");
 							e.printStackTrace();
@@ -182,8 +182,8 @@ public class AttachmentAlfresco implements IAttachmentStore {
 				for (int i = 0; i < attach.m_items.size(); i++) {
 					log.fine(attach.m_items.get(i).toString());
 					
-					MAttachmentEntryEcosoft item = (MAttachmentEntryEcosoft) attach.m_items.get(i);
-					String docId = item.getDocId();
+					MAttachmentEntry item = attach.m_items.get(i);
+					String docId = getDocId(item);
 					
 					if (docId.equals("")) // Not exists, create new document.
 					{
@@ -257,11 +257,11 @@ public class AttachmentAlfresco implements IAttachmentStore {
 	public boolean delete(MAttachment attach, MStorageProvider prov) {
 		//delete all attachment files
 		for (int i=0; i<attach.m_items.size(); i++) {
-			final MAttachmentEntryEcosoft entry = (MAttachmentEntryEcosoft) attach.m_items.get(i);
+			final MAttachmentEntry entry = attach.m_items.get(i);
 			
 			Session session = CmisUtil.createCmisSession(prov.getUserName(), prov.getPassword(), prov.getURL());
 			org.apache.chemistry.opencmis.client.api.Document file = 
-					(org.apache.chemistry.opencmis.client.api.Document) session.getObject(session.createObjectId(entry.getDocId()));
+					(org.apache.chemistry.opencmis.client.api.Document) session.getObject(session.createObjectId(getDocId(entry)));
 			
 			log.fine("delete: " + file.getName());
 			if(file !=null){
@@ -280,12 +280,12 @@ public class AttachmentAlfresco implements IAttachmentStore {
 		if (index >= 0 && index < attach.m_items.size()) {
 			// CMIS by KTU
 			//remove files
-			final MAttachmentEntryEcosoft entry = (MAttachmentEntryEcosoft) attach.m_items.get(index);
+			final MAttachmentEntry entry = attach.m_items.get(index);
 
 			// Connect
 			Session session = CmisUtil.createCmisSession(prov.getUserName(), prov.getPassword(), prov.getURL());
 			org.apache.chemistry.opencmis.client.api.Document file = 
-					(org.apache.chemistry.opencmis.client.api.Document) session.getObject(session.createObjectId(entry.getDocId()));
+					(org.apache.chemistry.opencmis.client.api.Document) session.getObject(session.createObjectId(getDocId(entry)));
 
 			log.fine("delete: " + file.getName());
 			if(file !=null){
@@ -304,5 +304,28 @@ public class AttachmentAlfresco implements IAttachmentStore {
 		log.warning( "Not deleted Index=" + index + " - Size=" + attach.m_items.size());
 		return false;
 	}
+	
+	/**
+	 * @return Returns the docid.
+	 */
+	private String getDocId (MAttachmentEntry entry)
+	{
+		String name = entry.getName();
+		String docid = "";
+		if (name.indexOf("!") > -1)
+			docid = name.split("!")[0];
+		return docid;
+	}
+	
+	/**
+	 * @param name The docid to set.
+	 */
+	private String setDocId (String name, String docid)
+	{
+		if (docid == null)
+			docid = "";
+        name = docid.concat("!").concat(name);
+        return name;
+	}	//	setDocId
 
 }
