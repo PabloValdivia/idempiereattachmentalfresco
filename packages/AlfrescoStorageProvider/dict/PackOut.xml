@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><idempiere Name="AlfrescoStorageProvider" Version="2.1" idempiereVersion="" DataBaseVersion="" Description="Extensions for AlfrescoStorageProvider" Author="" AuthorEmail="" CreatedDate="2015-08-04 12:09:48.566" UpdatedDate="2015-08-04 12:09:48.566" PackOutVersion="100" UpdateDictionary="false" Client="0-SYSTEM-System" AD_Client_UU="11237b53-9592-4af1-b3c5-afd216514b5d">
+    <AD_EntityType type="table">
+        <AD_Client_ID>0</AD_Client_ID>
+        <AD_Org_ID>0</AD_Org_ID>
+        <EntityType>A42ALF</EntityType>
+        <IsActive>Y</IsActive>
+        <Name>action42 - Alfresco Storage Provider</Name>
+        <Description/>
+        <Help/>
+        <Version/>
+        <ModelPackage/>
+        <Classpath/>
+        <Processing>N</Processing>
+        <AD_EntityType_UU>8eefaeaf-2799-447d-ab80-e9931b50a5b9</AD_EntityType_UU>
+    </AD_EntityType>
+    <AD_Ref_List type="table">
+        <AD_Client_ID>0</AD_Client_ID>
+        <AD_Org_ID>0</AD_Org_ID>
+        <Name>Alfresco</Name>
+        <Description/>
+        <AD_Reference_ID reference="id">200019</AD_Reference_ID>
+        <ValidFrom/>
+        <ValidTo/>
+        <Value>Alfresco</Value>
+        <IsActive>Y</IsActive>
+        <EntityType>A42ALF</EntityType>
+        <AD_Ref_List_UU>56c0e7e9-9794-4a12-a07a-ec7dd406cbbd</AD_Ref_List_UU>
+        <AD_Ref_List_Trl type="translation">
+            <Description/>
+            <Name>Alfresco</Name>
+            <AD_Language>es_CO</AD_Language>
+            <IsActive>Y</IsActive>
+            <IsTranslated>N</IsTranslated>
+        </AD_Ref_List_Trl>
+        <AD_Ref_List_Trl type="translation">
+            <Description/>
+            <Name>Alfresco</Name>
+            <AD_Language>de_DE</AD_Language>
+            <IsActive>Y</IsActive>
+            <IsTranslated>N</IsTranslated>
+        </AD_Ref_List_Trl>
+    </AD_Ref_List>
+</idempiere>
