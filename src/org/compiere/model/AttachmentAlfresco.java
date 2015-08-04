@@ -308,7 +308,7 @@ public class AttachmentAlfresco implements IAttachmentStore {
 	/**
 	 * @return Returns the docid.
 	 */
-	private String getDocId (MAttachmentEntry entry)
+	public static String getDocId (MAttachmentEntry entry)
 	{
 		String name = entry.getName();
 		String docid = "";
