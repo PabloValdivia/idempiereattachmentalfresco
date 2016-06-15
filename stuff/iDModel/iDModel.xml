@@ -41,6 +41,11 @@
                <type>d:text</type>
                <default></default>
             </property>
+            <property name="id:checksum">
+               <title>Checksum</title>
+               <type>d:text</type>
+               <default></default>
+            </property>
          </properties>
       </type>
    </types>
