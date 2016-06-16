@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -102,14 +103,19 @@ public class CmisUtil
 	    	// document = (Document) session.getObjectByPath("/" + folder.getName() + "/" + tableName + "/" + recordId + "/" + fileName);
 	    	// so lets query the repository
 	    	StringBuilder query = new StringBuilder("SELECT cmis:objectId FROM id:attachment WHERE ")
-	    		 .append(" id:tablename='").append(tableName)
-	    		 .append("' AND id:recordid='").append(recordId)
-	    	     .append("' AND cmis:name='").append(fileName).append("'");
+	    	.append(" id:tablename='").append(tableName)
+	    	.append("' AND id:recordid='").append(recordId)
+	    	.append("' AND cmis:name='").append(fileName).append("'");
 	    	ItemIterable<QueryResult> searchResult = session.query(query.toString(), false);
-	    	for (QueryResult resultRow : searchResult) {
+	    	Iterator<QueryResult> it = searchResult.iterator(); 
+	    	while (it.hasNext()) {
+	    		QueryResult resultRow = it.next(); 
+	    		if (resultRow == null)
+	    			break;
 	    		String oldObjectId = (String) resultRow.getPropertyByQueryName("cmis:objectId").getFirstValue();
 	    		document = (Document) session.getObject(oldObjectId);
 	    	}
+
 	    }
 	    catch (CmisObjectNotFoundException e) {
 	    	;
@@ -123,7 +129,7 @@ public class CmisUtil
 	    		// get latest major version
 	    		document = document.getObjectOfLatestVersion(true); 
 	    	}
-	    	
+
 	    	Property<Object> objCheckSum = document.getProperty("id:checksum");
 	    	if (objCheckSum.getValue()!=null && objCheckSum.getValue().equals(checkSum)) {
 	    		// we give the existing document back
@@ -137,7 +143,7 @@ public class CmisUtil
 	    	ObjectId newDocId = pwc.checkIn(true, null, contentStream, "Another version");
 	    	document = (Document) session.getObject(newDocId);
 	    	// set and update the checksum property
-		    docProps.put("id:checksum", checkSum);
+	    	docProps.put("id:checksum", checkSum);
 	    	document.updateProperties(docProps);
 	    }
 	    // nothing found, create new

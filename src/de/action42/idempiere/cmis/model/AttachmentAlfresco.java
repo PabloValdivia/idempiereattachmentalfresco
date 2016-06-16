@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -23,6 +24,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
+import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.compiere.model.IAttachmentStore;
@@ -274,6 +277,12 @@ public class AttachmentAlfresco implements IAttachmentStore {
 	 * @param item
 	 */
 	private void getEntryData(Node item) {
+		// reset all
+		m_docidNode = null;
+		m_fileNode = null;
+		m_nameNode = null;
+		m_versionNode = null;
+		m_md5Node = null;
 		final Node entryNode = item;
 		if (entryNode == null)
 			return;
@@ -301,6 +310,8 @@ public class AttachmentAlfresco implements IAttachmentStore {
 			m_nameNode = null;
 			m_versionNode = null;
 			m_md5Node = null;
+			if (data == null)
+				return;
 			final DocumentBuilder builder = factory.newDocumentBuilder();
 			final Document document = builder.parse(new ByteArrayInputStream(data));
 			final NodeList entries = document.getElementsByTagName("entry");
@@ -395,11 +406,33 @@ public class AttachmentAlfresco implements IAttachmentStore {
 		if (index >= 0 && index < attach.m_items.size()) {
 			//remove files
 			final MAttachmentEntry entry = attach.m_items.get(index);
-
+			String fileName = entry.getName();
+			String tableName = MTable.getTableName(Env.getCtx(), attach.getAD_Table_ID());
+			String recordId = ((Integer)attach.getRecord_ID()).toString();
 			// Connect
 			Session session = CmisUtil.createCmisSession(prov.getUserName(), prov.getPassword(), prov.getURL());
-			org.apache.chemistry.opencmis.client.api.Document file = 
-					(org.apache.chemistry.opencmis.client.api.Document) session.getObject(session.createObjectId(getDocId(attach, index)));
+			org.apache.chemistry.opencmis.client.api.Document file = null;
+			try {
+				// we better not rely on this path
+				// document = (Document) session.getObjectByPath("/" + folder.getName() + "/" + tableName + "/" + recordId + "/" + fileName);
+				// so lets query the repository
+				StringBuilder query = new StringBuilder("SELECT cmis:objectId FROM id:attachment WHERE ")
+				.append(" id:tablename='").append(tableName)
+				.append("' AND id:recordid='").append(recordId)
+				.append("' AND cmis:name='").append(fileName).append("'");
+				ItemIterable<QueryResult> searchResult = session.query(query.toString(), false);
+				Iterator<QueryResult> it = searchResult.iterator(); 
+				while (it.hasNext()) {
+					QueryResult resultRow = it.next(); 
+					if (resultRow == null)
+						break;
+					String objectId = (String) resultRow.getPropertyByQueryName("cmis:objectId").getFirstValue();
+					file = (org.apache.chemistry.opencmis.client.api.Document) session.getObject(objectId);
+				}
+			}
+			catch (CmisObjectNotFoundException e) {
+				;
+			}
 
 			log.fine("delete: " + file.getName());
 			if(file !=null){
