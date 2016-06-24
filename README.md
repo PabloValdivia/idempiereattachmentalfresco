@@ -2,7 +2,7 @@
 
 ### What is this repository for? ###
 
-* It provides an iDempiere AttachmentProvider to store Attachments in Alfresco
+* It provides an iDempiere AttachmentProvider to store Attachments in Alfresco DMS
 * Version 3.1.0 (developed against iDempiere 3.1.0)
 * Needs Alfresco 5.0 or later (developed against 5.0.d)
 * Based on work done by Kittiu as described on 
