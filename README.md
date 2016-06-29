@@ -10,4 +10,4 @@
 
 ### How do I get set up? ###
 
-See wiki page TBA
+See wiki page http://wiki.idempiere.org/en/Plugin:_Alfresco_AttachmentProvider
